@@ -1,21 +1,31 @@
 <script>
   import Header from '$lib/Header.svelte'
-  import BulmaExamples from '$lib/BulmaExamples.svelte'
+  import Tabs from '$lib/Tabs.svelte'
+  import Categories from '$lib/Categories.svelte'
+  import Footer from '$lib/Footer.svelte'
+  import { getPlayer } from '$lib/db.js'
+
+  let player = getPlayer()
+  let currentCategory = 'Attacking'
 </script>
 
 <Header />
 
 <main class="content section">
-  <h2>SvelteKit</h2>
 
-  <p>Welcome to coding with SvelteKit, a modern JavaScript framework that makes it easy to code great apps.</p>
+  <!-- Wait for the player to come from the database before loading all the stuff on the page. -->
+  {#await player}
+    <p>Loading...</p>
+  {:then player}
+    <h2>{player.firstName} {player.lastName}</h2>
 
-  <p>This template comes loaded with the <a href="https://bulma.io/documentation/">Bulma CSS framework</a>, so you can save time and focus on your project.</p>
+    <!-- The tabs get sent the achievements so they know the categories to display. They also keep track of the currently selected category. -->
+    <Tabs {player} bind:currentCategory />
 
-  <p>Here's some examples of colour helpers. You can change the colours in <code>theme.scss</code></p>
-  <BulmaExamples />
+    <!-- Categories show the individual achievements and their current level. It also keeps track of the currently selected category. -->
+    <Categories {player} bind:currentCategory />
+   
+  {/await}
 </main>
 
-<footer class="footer">
-  <p class="has-text-centered">&copy; Craighead Diocesan School 2025</p>
-</footer>
+<Footer />
